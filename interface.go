@@ -99,3 +99,17 @@ func ContainsString(t testing.TB, haystack string, needle string) {
 	t.Helper()
 	assert(t, nestedAssertParent, strings.Contains(haystack, needle), []any{"expected needle string '%s' to be in a haystack string '%s'", needle, haystack})
 }
+
+func Panic(t testing.TB, f func(), f_recover func(t testing.TB, rec any), args ...any) {
+	t.Helper()
+	defer func() {
+		if r := recover(); r != nil {
+			if f_recover != nil {
+				f_recover(t, r)
+			}
+			return
+		}
+		assert(t, nestedAssertParent+1, false, []any{"expected panic, but no panic occurred"})
+	}()
+	f()
+}
